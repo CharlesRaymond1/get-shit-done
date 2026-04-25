@@ -307,22 +307,6 @@ function runStatusline() {
         if (cache.update_available) {
           gsdUpdate = '\x1b[33m⬆ /gsd-update\x1b[0m │ ';
         }
-        if (cache.stale_hooks && cache.stale_hooks.length > 0) {
-          // If installed version is ahead of npm latest, this is a dev install.
-          // Running /gsd-update would downgrade — show a contextual warning instead.
-          const isDevInstall = (() => {
-            if (!cache.installed || !cache.latest || cache.latest === 'unknown') return false;
-            const parseV = v => v.replace(/^v/, '').split('.').map(Number);
-            const [ai, bi, ci] = parseV(cache.installed);
-            const [an, bn, cn] = parseV(cache.latest);
-            return ai > an || (ai === an && bi > bn) || (ai === an && bi === bn && ci > cn);
-          })();
-          if (isDevInstall) {
-            gsdUpdate += '\x1b[33m⚠ dev install — re-run installer to sync hooks\x1b[0m │ ';
-          } else {
-            gsdUpdate += '\x1b[31m⚠ stale hooks — run /gsd-update\x1b[0m │ ';
-          }
-        }
       } catch (e) {}
     }
 
@@ -374,9 +358,9 @@ function runStatusline() {
         : null;
 
     if (middle) {
-      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ ${middle} │ \x1b[2m${dirname}\x1b[0m${ctx}${lastCmdSuffix}`);
+      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ ${middle} │ \x1b[2m${dirname}\x1b[0m${ctx}${lastCmdSuffix} │ ${subUsage}`);
     } else {
-      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}${lastCmdSuffix}`);
+      process.stdout.write(`${gsdUpdate}\x1b[2m${model}\x1b[0m │ \x1b[2m${dirname}\x1b[0m${ctx}${lastCmdSuffix} │ ${subUsage}`);
     }
   } catch (e) {
     // Silent fail - don't break statusline on parse errors
